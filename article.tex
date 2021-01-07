@@ -50,7 +50,7 @@ accelerator, HPC, structured grid, stencil, heterogeneous computing
 Recent progress in machine learning (ML) has created an exponential growth in demand for computational resources 
 \cite{openai-power-analysis}, with a corresponding increase in energy use for computation. This demand, coming at a time when Moore's Law has slowed and Dennard Scaling no longer holds, has led to the development of  energy-efficient hardware accelerator devices for artificial intelligence (AI) processing. 
 
-Devices targeting the edge computing or inference-only markets may have limited support for floating point computation. But devices designed for accelerating ML training often support 32-bit floating point computation. They have large amounts of on-chip memory for holding weights without resorting to transfers from host DRAM and include custom hardware for common ML operations (e.g. matrix engines). These capabilities have let to interest in exploiting AI devices for traditional scientific HPC \cite{domke2020matrix, cerebras}. 
+Devices targeting the edge computing or inference-only markets may have limited support for floating point computation. But devices designed for accelerating ML training often support 32-bit floating point computation. They have large amounts of on-chip memory for holding weights without resorting to transfers from host DRAM and include custom hardware for common ML operations (e.g. matrix engines). These capabilities have let to interest in exploiting AI devices for traditional scientific HPC \cite{domke2020matrix, cerebras}, and research into mixed-precision implementations of numerical solver algorithms \cite{mixed-precision-sim}. 
 
 An example of an AI accelerator that supports floating point computation is Graphcore’s Intelligence Processsing Unit (IPU). The IPU has large amounts of fast on-chip SRAM (static random-access memory), distributed as 256KiB local memories for each of its 1216 cores. There is no global memory, and cores must share data by passing messages over the IPU's high-bandwidth, all-to-all interconnect. IPUs incorporate specialised hardware for common machine learning operations such as convolutions and matrix multiplication. Most alluringly for HPC developers, the IPU can be programmed at a low-level by using its C++ framework, Poplar, making it possible to implement HPC applications without having to shoehorn them into higher-level ML frameworks. 
 
@@ -72,7 +72,7 @@ Every core supports six hardware worker threads, which run in a time-sliced fash
 
 MK-1 IPUs are available on dual-IPU C2 cards connected to a host over PCIe4 x16. Systems scale to multiple IPUs using a fast custom inter-IPU link that allows communication without involving the host. 
 
-Each IPU uses approximately 150W of power -- significantly less than contemporary HPC GPUs and CPUs.
+Each IPU uses approximately 150W of power -- significantly less than contemporary HPC GPUs (cf. 250W TDP for the NVIDIA V100 \cite{CitadelPaper}).
 
 Graphcore recently announced a more powerful MK2 IPU, with 3x the SRAM and more cores, but we did not have access to it for this work.
 
@@ -84,7 +84,7 @@ Poplar programs build a computational dataflow graph in which nodes represent co
 
 Poplar programs follow Valiant's Bulk-Synchronous Parallel (BSP) model of computation~\cite{Valiant1990}, in which serial supersteps are made up of parallel execution, exchange and synchronisation phases. This allows concurrency hazards to be avoided, and the compiler is able to implicitly schedule and optimise the communication (``exchanges'') of tensor regions both between IPUs and between each IPU's tiles. In Poplar, the BSP style is enforced by grouping operations into ``compute sets'', with restrictions on reading and writing the same tensor regions from different workers in the same compute phase.
 
-While a large number of optimised operations on tensors (e.g. matrix multiplication, reductions, padding) are available through Poplar's libraries, custom operations called ``vertexes'' can be written in standard C++. Vertexes form the primary mechanism we will exploit for HPC purposes. 
+While a large number of optimised operations on tensors (e.g. matrix multiplication, reductions, padding) are available through Poplar's libraries, custom operations called ``vertexes'' can be written in standard C++. Vertexes form the primary mechanism we will exploit for HPC purposes. An example is shown in Appendix~B.
 
 Vertexes are unaware of either the tensor abstraction or the graph -- they are small C++ objects defining methods which operate on primitive C++ types. Class members defined as special \texttt{Input}, \texttt{Output} or \texttt{InOut} types define a vertex's interface for wiring into the dataflow graph. Vertexes must be explicitly mapped to compute sets and tiles during program construction. 
 
@@ -190,7 +190,7 @@ Without resorting to assembly code, we found that the only ``easy win'' optimisa
 
 \section{Memory-bandwidth characterisation of the IPU}
 \label{sec:performance}
-Graphcore's marketing material lists the IPU's theoretical memory bandwidth as 45 TB/s. However, in ~\cite[p. 26]{CitadelPaper}, Jia, Tillman, Maggioni and Scarpazza calculate the IPU’s theoretical maximum aggregate read memory bandwidth as 31.1 TB/s (assuming all cores issue a 16-byte read instruction on every clock cycle, while running at maximum clock frequency). These impressive numbers are an order of magnitude greater than the HBM2 memory on the contemporary NVIDIA A100, and are achieved in the IPU's design by placing on-chip SRAM physically close to each core. Unfortunately, theoretical memory bandwidth is rarely a useful guide to the achievable sustainable memory bandwidth that developers should expect. 
+Graphcore's marketing material lists the IPU's theoretical memory bandwidth as 45 TB/s. However, Jia, Tillman, Maggioni and Scarpazza ~\cite[p. 26]{CitadelPaper} calculate the IPU’s theoretical maximum aggregate read memory bandwidth as 31.1 TB/s (assuming all cores issue a 16-byte read instruction on every clock cycle, while running at maximum clock frequency), but note that less-than-perfect load instruction density will achieve only a fraction of this. These impressive numbers are an order of magnitude greater than the HBM2 memory on the contemporary NVIDIA A100, and are achieved in the IPU's design by placing on-chip SRAM physically close to each core. Unfortunately, theoretical memory bandwidth is rarely a useful guide to the achievable sustainable memory bandwidth that developers should expect. 
 
 \subsection{STREAM}
 Measuring actual achievable bandwidth is the aim of the BabelSTREAM benchmark suite~\cite{babelstream}, originally designed for GPUs, and since applied to CPU caches in~\cite{babelstream-cache}. Notably, one of the kernels in BabelSTREAM is the well-known STREAM benchmark by McCalpin~\cite{stream}, which is used as the memory bandwidth ceiling when constructing Roofline performance models. 
@@ -358,7 +358,7 @@ Convolutions are so commonplace in modern deep learning that the IPU contains ha
   
   Fig.~\-\ref{fig:gb-datatype} also shows vectorising the code results in significant performance improvements.
   
- We compared timings against 32-bit precision parallel implementations for CPU and GPU\footnote{ CPU: Intel Xeon Platinum 8168 (Skylake), 2x24-core. GPU: NVIDIA Volta V100. CPU and GPU implementations are in OpenCL v1.1.}.  Fig.~\- \ref{fig:gb-stencil-vs-conv} shows these results for a vectorised implementation with a single IPU, with performance normalised against the worst result.  The 1-IPU stencil implementation was consistently the best-performing for 32-bit precision. OpenCL compiler limitations meant that extensions for 16-bit precision were unavailable on the comparison platforms, precluding any comparison. 
+ We compared timings against 32-bit precision parallel implementations for CPU and GPU (details in Appendix~A).  Fig.~\- \ref{fig:gb-stencil-vs-conv} shows these results for a vectorised implementation with a single IPU, with performance normalised against the worst result.  The 1-IPU stencil implementation was consistently the best-performing for 32-bit precision. OpenCL compiler limitations meant that extensions for 16-bit precision were unavailable on the comparison platforms, precluding any comparison. 
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=0.5\textwidth]{gaussian-blur-relative.png}}
@@ -465,9 +465,30 @@ The authors would like to thank Graphcore for providing access to a Dell DSS8440
 
 \bibliography{IEEEabrv,references}
 
-\section*{Appendix: Platform details}
+\section*{Appendix A: Platform details}
+\label{app:platform-details}
 \scriptsize{
-2 Intel(R) Xeon(R) Platinum 8168 CPUs @ 2.70GHz, 768GiB RAM, IPU driver version 1.0.44, firmware version 1.3.31. Poplar SDK version v1.2.0-495c1aa368. Intel OpenCL driver v18.1.0.0920. NVIDIA Volta V100 16GiB, NVIDIA CUDA Toolkit v8.0.44, OpenCL v1.1. GCC 7.5.0 flags \texttt{-march=native -mtune=native -O3}. 
+Comparison implementations in CPU and GPU are in OpenCL v1.1. 
+
+\begin{itemize}
+    \item Intel(R) Xeon(R) Platinum 8168 (Skylake) CPUs @ 2.70GHz, 2x24 cores, 768GiB RAM
+    \item IPU driver version 1.0.44, firmware version 1.3.31. Poplar SDK version v1.2.0-495c1aa368
+    \item Intel OpenCL driver v18.1.0.0920
+    \item NVIDIA Volta V100 16GiB, NVIDIA CUDA Toolkit v8.0.44
+    \item GCC 7.5.0 flags \texttt{-march=native -mtune=native -O3}
+\end{itemize}
 }
+
+
+\section*{Appendix B: Example vertex}
+\label{app:example-vertex}
+\scriptsize{
+The code below shows an example Vertex, and the use of the SIMD vector types:
+
+\begin{verbatim}
+TODO
+\end{verbatim}
+}
+
 
 \end{document}
