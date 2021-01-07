@@ -1,0 +1,380 @@
+
+@article{CitadelPaper,
+  title   = {{Dissecting the Graphcore IPU Architecture via Microbenchmarking}},
+  year    = {2019},
+  author  = {Jia, Zhe and Tillman, Blake and Maggioni, Marco and Scarpazza, Daniele Paolo},
+  arxivid = {1912.03413},
+  journal={ arXiv preprint: 1912.03413}
+}
+%  url     = {http://arxiv.org/abs/1912.03413},
+
+@article{stream,
+    title={Memory bandwidth and machine balance in current high performance computers},
+    author={McCalpin, John D.},
+    journal={IEEE computer society technical committee on computer architecture (TCCA) newsletter},
+    year={1995},
+    volume={2},
+    issue={19-25},
+}
+
+
+@article{babelstream-cache,
+  title={Portable methods for measuring cache hierarchy performance},
+  author={Deakin, Tom and Price, James and McIntosh-Smith, Simon},
+  journal={IEEE/ACM Super Computing},
+  year={2017}
+}
+
+
+@techreport{dwarves,
+  author      = {Asanovi\'c, Krste and Bodik, Ras and Catanzaro, Bryan Christopher and Gebis, Joseph James and Husbands, Parry and Keutzer, Kurt and Patterson, David A. and Plishker, William Lester and Shalf, John and Williams, Samuel Webb and Yelick, Katherine A.},
+  title       = {The Landscape of Parallel Computing Research: A View from Berkeley},
+  institution = {EECS Department, University of California, Berkeley},
+  year        = {2006},
+  month       = {12},
+ 
+  number      = {UCB/EECS-2006-183}
+}
+% url         = {http://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-183.html},
+
+@article{babelstream,
+  author  = {Deakin, Tom and Price, James and  Martineau, Matt and McIntosh-Smith, Simon},
+  title   = {GPU-STREAM v2.0: Benchmarking the achievable memory bandwidth of many-core processors across diverse parallel programming models},
+  year    = {2016},
+  journal = {Paper presented at P\^{}3MA Workshop at ISC High Performance},
+  address = {Frankfurt, Germany}
+}
+
+
+@article{roofline,
+  author     = {Williams, Samuel and Waterman, Andrew and Patterson, David},
+  title      = {Roofline: An Insightful Visual Performance Model for Multicore Architectures},
+  year       = {2009},
+  issue_date = {April 2009},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {52},
+  number     = {4},
+  issn       = {0001-0782},
+  doi        = {10.1145/1498765.1498785},
+  journal    = {Commun. ACM},
+  month      = apr,
+  pages      = {65–76},
+  numpages   = {12}
+}
+
+
+@online{graphcore-docs,
+  title  = {{Graphcore Developer Portal}},
+  year   = {2020},
+  author = {Graphcore},
+  url = {https://www.graphcore.ai/developer}
+}
+
+
+
+@article{hierarchical-roofline-gpu,
+author = {Yang, Charlene and Kurth, Thorsten and Williams, Samuel},
+year = {2019},
+month = {11},
+pages = {},
+title = {Hierarchical Roofline analysis for GPUs: Accelerating performance optimization for the NERSC‐9 Perlmutter system},
+journal = {Concurrency and Computation: Practice and Experience},
+doi = {10.1002/cpe.5547}
+}
+
+
+@article{yang20208,
+   title={8 Steps to 3.7 TFLOP/s on NVIDIA V100 GPU: Roofline Analysis and Other Tricks},
+   author={Charlene Yang},
+   year={2020},
+   eprint={2008.11326},
+   archivePrefix={arXiv},
+   primaryClass={cs.DC},
+     url     = {http://arxiv.org/abs/2008.11326},
+  journal={ arXiv preprint: 2008.11326}
+}
+
+
+@inproceedings{lbm-optim,
+author = {Williams, Samuel and Carter, Jonathan and Oliker, Leonid and Shalf, John and Yelick, Katherine},
+year = {2008},
+month = {04},
+pages = {},
+title = {Lattice Boltzmann Simulation Optimization on Leading Multicore Platforms},
+booktitle = {International Parallel and Distributed Processing Symposium (IPDPS)},
+doi = {10.1109/IPDPS.2008.4536295}
+}
+
+
+
+@InProceedings{overview-and-derivation-of-lbm,
+author="K{\"o}rner, Carolin
+and Pohl, Thomas
+and R{\"u}de, Ulrich
+and Th{\"u}rey, Nils
+and Zeiser, Thomas",
+editor="Bruaset, Are Magnus
+and Tveito, Aslak",
+title="Parallel Lattice Boltzmann Methods for CFD Applications",
+booktitle="Numerical Solution of Partial Differential Equations on Parallel Computers",
+year="2006",
+publisher="Springer",
+address="Berlin, Heidelberg",
+pages="439--466",
+abstract="The lattice Boltzmann method (LBM) has evolved to a promising alternative to the well-established methods based on finite elements/volumes for computational fluid dynamics simulations. Ease of implementation, extensibility, and computational efficiency are the major reasons for LBM's growing field of application and increasing popularity. In this paper we give a brief introduction to the involved theory and equations for LBM, present various techniques to increase the single-CPU performance, outline the parallelization of a standard LBM implementation, and show performance results. In order to demonstrate the straightforward extensibility of LBM, we then focus on an application in material science involving fluid flows with free surfaces. We discuss the required extensions to handle this complex scenario, and the impact on the parallelization technique.",
+isbn="978-3-540-31619-0"
+}
+
+
+
+
+@article{lbm-derivation,
+author = {He, Xiaoyi and Luo, Li-Shi},
+year = {1997},
+month = {06},
+pages = {R6333-R6336},
+title = {A priori derivation of the lattice Boltzmann equation},
+volume = {55},
+journal = {PHYSICAL REVIEW E},
+doi = {10.1103/PhysRevE.55.R6333}
+}
+
+
+@article{lbm-propagation-steps,
+title = "Comparison of different propagation steps for lattice Boltzmann methods",
+journal = "Computers \& Mathematics with Applications",
+volume = "65",
+number = "6",
+pages = "924 - 935",
+year = "2013",
+note = "Mesoscopic Methods in Engineering and Science",
+issn = "0898-1221",
+doi = "https://doi.org/10.1016/j.camwa.2012.05.002",
+author = {Markus Wittmann and Thomas Zeiser and Georg Hager and Gerhard Wellein}
+}
+
+
+@article{pull-algorithm,
+title = "On the single processor performance of simple lattice Boltzmann kernels",
+journal = "Computers \& Fluids",
+volume = "35",
+number = "8",
+pages = "910 - 919",
+year = "2006",
+note = "Proceedings of the First International Conference for Mesoscopic Methods in Engineering and Science",
+issn = "0045-7930",
+doi = "https://doi.org/10.1016/j.compfluid.2005.02.008",
+author = "G. Wellein and T. Zeiser and G. Hager and S. Donath",
+abstract = "This report presents a comprehensive survey of the effect of different data layouts on the single processor performance characteristics for the lattice Boltzmann method both for commodity “off-the-shelf” (COTS) architectures and tailored HPC systems, such as vector computers. We cover modern 64-bit processors ranging from IA32 compatible (Intel Xeon/Nocona, AMD Opteron), superscalar RISC (IBM Power4), IA64 (Intel Itanium 2) to classical vector (NEC SX6+) and novel vector (Cray X1) architectures. Combining different data layouts with architecture dependent optimization strategies we demonstrate that the optimal implementation strongly depends on the architecture used. In particular, the correct choice of the data layout could supersede complex cache-blocking techniques in our kernels. Furthermore our results demonstrate that vector systems can outperform COTS architectures by one order of magnitude."
+}
+
+@inproceedings{Nguyen_3.5dblocking,
+  title={3.5-D blocking optimization for stencil computations on modern CPUs and GPUs},
+  author={Nguyen, Anthony and Satish, Nadathur and Chhugani, Jatin and Kim, Changkyu and Dubey, Pradeep},
+  booktitle={SC'10: Proceedings of the 2010 ACM/IEEE International Conference for High Performance Computing, Networking, Storage and Analysis},
+  pages={1--13},
+  year={2010},
+  organization={IEEE}
+}
+
+@article{aa-scheme,
+  title={Technical report: How to implement your DdQq dynamics with only q variables per node (instead of 2q)},
+  author={Latt, Jonas},
+  journal={Tufts University},
+  pages={1--8},
+  year={2007}
+}
+
+
+@article{esoteric-twist,
+  title={Esoteric twist: an efficient in-place streaming algorithmus for the lattice Boltzmann method on massively parallel hardware},
+  author={Geier, Martin and Schoenherr, Martin},
+  journal={Computation},
+  volume={5},
+  number={2},
+  pages={19},
+  year={2017},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+
+
+
+@inproceedings{palmer2002efficient,
+  title={Efficient Algorithms for Ghost Cell Updates on Two Classes of MPP Architectures.},
+  author={Palmer, Bruce J and Nieplocha, Jarek},
+  booktitle={IASTED PDCS},
+  pages={192--197},
+  year={2002}
+}
+
+
+@article{Valiant1990,
+  title    = {A Bridging Model for Parallel Computation},
+  year     = {1990},
+  journal  = {Communications of the ACM},
+  author   = {Valiant, Leslie G.},
+  number   = {8},
+  month    = {1},
+  pages    = {103--111},
+  volume   = {33},
+  doi      = {10.1145/79173.79181},
+  issn     = {15577317},
+  keywords = {Bulksynchronous, Design, parallel model}
+}
+
+@inproceedings{tiling-stencils-for-max-parallel,
+author = {Bandishti, Vinayaka and Pananilath, Irshad and Bondhugula, Uday},
+title = {Tiling Stencil Computations to Maximize Parallelism},
+year = {2012},
+isbn = {9781467308045},
+publisher = {IEEE Computer Society Press},
+address = {Washington, DC, USA},
+booktitle = {Proceedings of the International Conference on High Performance Computing, Networking, Storage and Analysis},
+articleno = {40},
+numpages = {11},
+keywords = {compilers, program transformation},
+location = {Salt Lake City, Utah},
+series = {SC '12}
+}
+
+@article{maranushi-and-makino,
+title = "Optimal Temporal Blocking for Stencil Computation",
+journal = "Procedia Computer Science",
+volume = "51",
+pages = "1303 - 1312",
+year = "2015",
+note = "International Conference On Computational Science, ICCS 2015",
+issn = "1877-0509",
+doi = "https://doi.org/10.1016/j.procs.2015.05.315",
+author = "Takayuki Muranushi and Junichiro Makino"
+}
+
+
+@inproceedings{datta-et-al,
+author = {Datta, Kaushik and Murphy, Mark and Volkov, Vasily and Williams, Samuel and Carter, Jonathan and Oliker, Leonid and Patterson, David and Shalf, John and Yelick, Katherine},
+title = {Stencil Computation Optimization and Auto-Tuning on State-of-the-Art Multicore Architectures},
+year = {2008},
+isbn = {9781424428359},
+publisher = {IEEE Press},
+booktitle = {Proceedings of the 2008 ACM/IEEE Conference on Supercomputing},
+articleno = {4},
+numpages = {12},
+location = {Austin, Texas},
+series = {SC '08}
+}
+
+
+@inproceedings{kamil2006implicit,
+  title={Implicit and explicit optimizations for stencil computations},
+  author={Kamil, Shoaib and Datta, Kaushik and Williams, Samuel and Oliker, Leonid and Shalf, John and Yelick, Katherine},
+  booktitle={Proceedings of the 2006 workshop on Memory system performance and correctness},
+  pages={51--60},
+  year={2006}
+}
+
+
+@inproceedings{bandishti2012tiling,
+  title={Tiling stencil computations to maximize parallelism},
+  author={Bandishti, Vinayaka and Pananilath, Irshad and Bondhugula, Uday},
+  booktitle={SC'12: Proceedings of the International Conference on High Performance Computing, Networking, Storage and Analysis},
+  pages={1--11},
+  year={2012},
+  organization={IEEE}
+}
+
+
+@inproceedings{communicaton-aware-roofline,
+author = {Cardwell, David and Song, Fengguang},
+year = {2019},
+month = {01},
+pages = {26--35},
+title = {An Extended Roofline Model with Communication-Awareness for Distributed-Memory HPC Systems},
+isbn = {9781450366328},
+journal = {HPC Asia 2019: Proceedings of the International Conference on High Performance Computing in Asia-Pacific Region},
+doi = {10.1145/3293320.3293321},
+  booktitle={Proceedings of the International Conference on High Performance Computing in Asia-Pacific Region},
+}
+
+@article{mcnamara-zanetti,
+  title = {Use of the Boltzmann Equation to Simulate Lattice-Gas Automata},
+  author = {McNamara, Guy R. and Zanetti, Gianluigi},
+  journal = {Phys. Rev. Lett.},
+  volume = {61},
+  issue = {20},
+  pages = {2332--2335},
+  year = {1988},
+  month = {Nov},
+  publisher = {American Physical Society}
+
+}
+%   doi = {10.1103/PhysRevLett.61.2332},
+%   url = {https://link.aps.org/doi/10.1103/PhysRevLett.61.2332}
+
+@inproceedings{Ortiz2020,
+  title     = {{Bundle Adjustment on a Graph Processor}},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR 2020)},
+  year      = {2020},
+  author    = {Ortiz, Joseph and Pupilli, Mark and Leutenegger, Stefan and Davison, Andrew J.},
+  arxivid   = {2003.03134}
+}
+%  url       = {http://arxiv.org/abs/2003.03134},
+
+
+
+@article{particle-physics-ipu,
+  title={Studying the potential of Graphcore IPUs for applications in Particle Physics},
+  author={Mohan, Lakshan Ram Madhan and Marshall, Alexander and Maddrell-Mander, Samuel and O'Hanlon, Daniel and Petridis, Konstantinos and Rademacker, Jonas and Rege, Victoria and Titterton, Alexander},
+  journal={arXiv preprint arXiv:2008.09210},
+  year={2020}
+}
+
+
+@misc{kacher2020graphcore,
+  title         = {Graphcore C2 Card performance for image-based deep learning application: A Report},
+  author        = {Ilyes Kacher and Maxime Portaz and Hicham Randrianarivo and Sylvain Peyronnet},
+  year          = {2020},
+  eprint        = {2002.11670},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CV}
+}
+
+
+
+@misc{openai-power-analysis,
+  author       = {Amodei, Dario and Hernandez, Danny},
+  month        = {06},
+  day          = {26},
+  title        = {AI and Compute},
+  howpublished = {OpenAI Blog Post},
+  year         = {2018},
+  url          = {https://openai.com/blog/ai-and-compute/}
+}
+
+
+@article{domke2020matrix,
+  title={Matrix Engines for High Performance Computing: A Paragon of Performance or Grasping at Straws?},
+  author={Domke, Jens and Vatai, Emil and Drozd, Aleksandr and Chen, Peng and Oyama, Yosuke and Zhang, Lingqi and Salaria, Shweta and Mukunoki, Daichi and Podobas, Artur and Wahib, Mohamed and others},
+  journal={arXiv preprint arXiv:2010.14373},
+  year={2020}
+}
+
+@techreport{parmetis,
+  title={Parmetis: Parallel graph partitioning and sparse matrix ordering library},
+  author={Karypis, George and Schloegel, Kirk and Kumar, Vipin},
+  year={1997},
+  institution={Department of Computer Science
+and Engineering, University of Minnesota},
+  number={TR 97-060}
+}
+%, 4-192 EECS Building, 200 Union Street SE, Minneapolis, MN 55455-0159 USA
+
+
+@inproceedings{cerebras,
+  title={Fast Stencil-Code Computation on a Wafer-Scale Processor},
+  author={Rocki, Kamil and Essendelft, Dirk and Sharapov, Ilya and Schreiber, Robert and Morrison, Michael and Kibardin, Vladimir and Portnoy, Andrey and Dieteker, Jean and Syamlal, Madhava and James, Michael},
+  booktitle={2020 SC20: International Conference for High Performance Computing, Networking, Storage and Analysis (SC)},
+  pages={807--820},
+  year={2020},
+  organization={IEEE Computer Society}
+}
