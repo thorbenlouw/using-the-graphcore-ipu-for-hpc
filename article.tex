@@ -9,6 +9,7 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage{listings}
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -84,7 +85,7 @@ Poplar programs build a computational dataflow graph in which nodes represent co
 
 Poplar programs follow Valiant's Bulk-Synchronous Parallel (BSP) model of computation~\cite{Valiant1990}, in which serial supersteps are made up of parallel execution, exchange and synchronisation phases. This allows concurrency hazards to be avoided, and the compiler is able to implicitly schedule and optimise the communication (``exchanges'') of tensor regions both between IPUs and between each IPU's tiles. In Poplar, the BSP style is enforced by grouping operations into ``compute sets'', with restrictions on reading and writing the same tensor regions from different workers in the same compute phase.
 
-While a large number of optimised operations on tensors (e.g. matrix multiplication, reductions, padding) are available through Poplar's libraries, custom operations called ``vertexes'' can be written in standard C++. Vertexes form the primary mechanism we will exploit for HPC purposes. An example is shown in Appendix~B.
+While a large number of optimised operations on tensors (e.g. matrix multiplication, reductions, padding) are available through Poplar's libraries, custom operations called ``vertexes'' can be written in standard C++. Vertexes form the primary mechanism we will exploit for HPC purposes. Example code for a Vertex is shown in Appendix~B.
 
 Vertexes are unaware of either the tensor abstraction or the graph -- they are small C++ objects defining methods which operate on primitive C++ types. Class members defined as special \texttt{Input}, \texttt{Output} or \texttt{InOut} types define a vertex's interface for wiring into the dataflow graph. Vertexes must be explicitly mapped to compute sets and tiles during program construction. 
 
@@ -94,7 +95,7 @@ Scaling to multiple IPUs is made relatively transparent by Poplar: by selecting 
 
 \section{Structured Grids and Stencils}
 \label{sec:structured-grids}
-Structured grids are one of the classes described by Asanov\'ic \emph{et~al} in their characterisation of the computational requirements of different parallel programming problems~\cite{dwarves}. They are commonly used in solvers for differential equations, such as those underpinning heat and fluid simulations.
+Structured grids are one of the classes described by Asanovi\'c \emph{et~al} in their characterisation of the computational requirements of different parallel programming problems~\cite{dwarves}. They are commonly used in solvers for differential equations, such as those underpinning heat and fluid simulations.
 
 In these applications, the domain under investigation is discretised onto a regular grid of cells. The structured layout means that a cell's neighbours can be located in a simple data structure using offset calculations, resulting in regular, predictable memory access patterns. This is in contrast to using \textit{un}structured grids, where neighbours are described using (sparse) graphs. 
 
@@ -295,7 +296,7 @@ Williams, Waterman and Patterson's Roofline model~\cite{roofline} is now widely 
          \caption{16-bit precision}
          \label{fig:roofline-hp}
      \end{subfigure}
-\caption{Roofline models for the IPU}
+\caption{Roofline models for the IPU. For clarity, we have only plotted the performance of the largest simulation size for our Gaussian Blur and LBM stencil kernels. }
 \label{fig:roofline}
 \end{figure}
 
@@ -405,7 +406,7 @@ We are encouraged by the promising performance seen for these two example applic
 
 Our work so far has focused on structured grid applications, which find a natural expression in tensor representations, but we have also begun work with unstructured grids on the IPU for use with finite element method simulations. These require more complex representations of the sparse connections between cells and more memory accesses, but we have been able to use the graph compiler to generate efficient communication of halo regions and expect to see similar benefits as structured grid implementations from the IPU's plentiful, low-latency SRAM memory and fast exchanges.
 
-Expressing our chosen HPC problems in Poplar was not always straightforward compared with familiar HPC technologies such as OpenMP, MPI and OpenCL. We found Poplar code to be more verbose than our OpenCL implementations ($\sim$1.6x lines of code difference for the Gaussian Blur stencils). 
+Expressing our chosen HPC problems in Poplar was not always straightforward compared with familiar HPC technologies such as OpenMP, MPI and OpenCL. We found Poplar code to be more verbose than our OpenCL implementations ($\sim$1.6x lines of code for the Gaussian Blur stencils). 
 
 There are important limitations in using IPU for HPC problems. Firstly, Poplar graphs are static, making it difficult to implement techniques such as dynamic grids and adaptive mesh refinement. Secondly, the graph compile time (a run-time cost) is very high compared to compilation of e.g. OpenCL kernels. For our small problems, graph compilation took longer than executing the resulting programs. Ahead-of-time compilation is also possible in Poplar. Thirdly, code developed for the IPU is not portable to other platforms. Fourthly, the IPU is limited to at most 32-bit precision, which may be insufficient for some scientific applications.
 
@@ -468,26 +469,101 @@ The authors would like to thank Graphcore for providing access to a Dell DSS8440
 \section*{Appendix A: Platform details}
 \label{app:platform-details}
 \scriptsize{
-Comparison implementations in CPU and GPU are in OpenCL v1.1. 
-
 \begin{itemize}
-    \item Intel(R) Xeon(R) Platinum 8168 (Skylake) CPUs @ 2.70GHz, 2x24 cores, 768GiB RAM
-    \item IPU driver version 1.0.44, firmware version 1.3.31. Poplar SDK version v1.2.0-495c1aa368
+    \item Intel\textregistered~Xeon\textregistered~ Platinum 8168 (Skylake) CPUs @ 2.70GHz, 2x24 cores, 768GiB RAM
+    \item IPU driver version 1.0.44, firmware version 1.3.31. Poplar SDK version v1.2.0-495c1aa368. IPU clock speed at 1.6 GHz
     \item Intel OpenCL driver v18.1.0.0920
     \item NVIDIA Volta V100 16GiB, NVIDIA CUDA Toolkit v8.0.44
     \item GCC 7.5.0 flags \texttt{-march=native -mtune=native -O3}
 \end{itemize}
+
+Comparison implementations for CPU and GPU use OpenCL v1.1. 
 }
 
 
-\section*{Appendix B: Example vertex}
+\section*{Appendix B: Example Poplar Code}
 \label{app:example-vertex}
 \scriptsize{
-The code below shows an example Vertex, and the use of the SIMD vector types:
+The Poplar C++ code below demonstrates a Vertex, and the use of the \texttt{half4} SIMD vector types:
 
-\begin{verbatim}
-TODO
-\end{verbatim}
+\begin{lstlisting}[language=C++, frame=single, basicstyle=\scriptsize]
+class GaussianBlurHalf4 : public Vertex {
+public:
+  // Flattened RGBA channels-last image fragments:
+  // `in' includes ghost cell padding,  
+  Input <Vector<half, VectorLayout::ONE_PTR, 8>> in;
+  // `out' has no ghost cell padding
+  Output <Vector<half, VectorLayout::ONE_PTR, 8>> out;
+  // width and height are unpadded
+  unsigned width;
+  unsigned height;
+
+  bool compute() {
+    // Recast as half4* to make compiler 
+    // generate 64-bit loads and stores
+    const auto h4in = reinterpret_cast<half4 *>(&in[0]);
+    auto h4out = reinterpret_cast<half4 *>(&out[0]);
+
+    // Vectorised: each variable represents 4 halfs
+    // So each operation works on 4 values
+    // We do one RGBA pixel (all channels) per iteration
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            #define H4_IDX(ROW, COL) \
+                (width+2)*((y+1)+ROW)+((x+1)+COL)
+
+            const auto nw = h4in[H4_IDX(-1, -1)];
+            const auto w  = h4in[H4_IDX( 0, -1)];
+            const auto sw = h4in[H4_IDX(+1, -1)];
+            const auto n  = h4in[H4_IDX(-1,  0)];
+            const auto m  = h4in[H4_IDX( 0,  0)];
+            const auto s  = h4in[H4_IDX(+1,  0)];
+            const auto ne = h4in[H4_IDX(+1, +1)];
+            const auto e  = h4in[H4_IDX( 0, +1)];
+            const auto se = h4in[H4_IDX(-1, +1)];
+            h4out[width * y + x] =  
+                1.f/16 * (nw+ne+sw+se) +
+                4.f/16 * m + 
+                2.f/16 * (e+w+s+n);
+        }
+    }
+    return true;
+  }
+};
+\end{lstlisting}
+
+The following snippet demonstrates how a Vertex is added to the graph and mapped to a tile:
+
+
+\begin{lstlisting}[language=C++, frame=single, basicstyle=\scriptsize]
+auto graph = poplar::Graph(ipuDevice);
+...
+// Omitted for brevity: 
+// Tensors are declared and partitioned over tiles
+// Some tensor slices are defined: 'someTensorSliceWithHalos' 
+// (mostly on tile 123, with borders on neighbouring tiles);
+// 'someTensorSliceNoHalos' (wholly contained on tile 123) 
+...
+// Load the file containing the vertex code
+graph.addCodelets("GaussianBlurCodelets.cpp",
+    CodeletFileType::Auto, 
+    "-O3");
+// Create a compute set (BSP phase)
+auto cs = graph.addComputeSet("Example Compute Set");
+// Add vertex to the graph, wiring up to tensor slices
+auto v = graph.addVertex(
+  cs,
+  "GaussianBlurHalf4",
+  {
+    {"in",  someTensorSliceWithHalos.flatten()},
+    {"out", someTensorSliceNoHalos.flatten()},
+  });
+graph.setInitialValue(v["width"], width);
+graph.setInitialValue(v["height"], height);
+graph.setTileMapping(v, 123); // Place vertex on tile 123
+...
+\end{lstlisting}
+
 }
 
 
